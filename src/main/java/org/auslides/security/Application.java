@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
         ShiroConfig.class,
         RepositoryConfig.class,
         MybatisConfig.class})
-@ComponentScan(basePackages = "com.ambow.security.rest")
+@ComponentScan(basePackages = "org.auslides.security.rest")
 @SpringBootConfiguration
 @SpringBootApplication
 public class Application {
