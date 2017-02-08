@@ -26,11 +26,11 @@ Login：
 ```
 POST http://localhost:8080/users/auth
 Content-Type : application/json
-Body: {"username":"guofengzh@gmail.com","password":"1111"}
+Body: {"username":"balala@gmail.com","password":"1111"}
 ```
 Response for successfully logged in：
 ```
-{"message":"ok","email":"guofengzh@gmail.com","status":200,"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJndW9mZW5nemhAZ21haWwuY29tIiwiZXhwIjoxNDg0NTgyNDAwfQ.BAr84eeVU0Thq4Y5bAc4gNdJw8l8nwjN1Vvrvmf1M94"}
+{"message":"ok","email":"balala@gmail.com","status":200,"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJndW9mZW5nemhAZ21haWwuY29tIiwiZXhwIjoxNDg0NTgyNDAwfQ.BAr84eeVU0Thq4Y5bAc4gNdJw8l8nwjN1Vvrvmf1M94"}
 ```
 
 Authentication failed：
