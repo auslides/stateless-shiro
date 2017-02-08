@@ -46,7 +46,7 @@ Header
 ```
 KEY: Authorization
 VALUE: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJndW9mZW5nemhAZ21haWwuY29tIiwiZXhwIjoxNDg0NTgyNDAwfQ.BAr84eeVU0Thq4Y5bAc4gNdJw8l8nwjN1Vvrvmf1M94
-Content-Type : application/json
+Accept: application/json
 ```
 Log out
 ```
