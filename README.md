@@ -6,7 +6,7 @@ Launch：
 ```
 mvn clean package spring-boot:run
 ```
-or run Application.main() in the IDE you used
+or run Application.main() in your IDE.
 
 Initialization: Filled in users for test
 ````
