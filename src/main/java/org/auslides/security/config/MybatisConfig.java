@@ -17,7 +17,7 @@ import java.sql.Driver;
 
 @Configuration
 @PropertySource(value = { "classpath:datasource.properties" })
-@MapperScan("com.ambow.security.mapper")
+@MapperScan("org.auslides.security.mapper")
 public class MybatisConfig {
 	@Value("${dev.app.jdbc.driver}")
     private String driverClass ;
