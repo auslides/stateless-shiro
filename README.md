@@ -8,7 +8,7 @@ mvn clean package spring-boot:run
 ```
 or run Application.main() in the IDE you used
 
-Initialization: --- Filled in users for test
+Initialization: Filled in users for test
 ````
 PUT http://localhost:8080/users/init
 ````
@@ -38,7 +38,7 @@ Authentication failed：
 {"failureReason":"invalidData","message":"unauthorized","status":401}
 ```
 
-Get a list of usrs：
+Get a list of users：
 ```
 GET http://localhost:8080/users
 ```
