@@ -48,8 +48,8 @@ import org.testng.annotations.Test;
 public class UserControllerTest extends AbstractTestNGSpringContextTests {
 
     private final String BASE_URL = "http://localhost:8080/users";
-    private final String USER_NAME = "Guofeng Zhang";
-    private final String USER_EMAIL = "guofengzh@gmail.com";
+    private final String USER_NAME = "Balala";
+    private final String USER_EMAIL = "balala@gmail.com";
     private final String USER_PWD = "1111";
     @Autowired
     private DefaultPasswordService passwordService;
