@@ -25,7 +25,7 @@ Body: {"timestamp":1482019369406,"status":401,"error":"Unauthorized","message":"
 Login：
 ```
 POST http://localhost:8080/users/auth
-Content-Type : application/json
+Content-Type: application/json
 Body: {"username":"balala@gmail.com","password":"1111"}
 ```
 Response for successfully logged in：
@@ -44,8 +44,7 @@ GET http://localhost:8080/users
 ```
 Header
 ```
-KEY: Authorization
-VALUE: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJndW9mZW5nemhAZ21haWwuY29tIiwiZXhwIjoxNDg0NTgyNDAwfQ.BAr84eeVU0Thq4Y5bAc4gNdJw8l8nwjN1Vvrvmf1M94
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJndW9mZW5nemhAZ21haWwuY29tIiwiZXhwIjoxNDg0NTgyNDAwfQ.BAr84eeVU0Thq4Y5bAc4gNdJw8l8nwjN1Vvrvmf1M94
 Accept: application/json
 ```
 Log out
@@ -54,6 +53,5 @@ DELETE http://localhost:8080/users/logout
 ```
 Header
 ```
-KEY: Authorization
-VALUE: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJndW9mZW5nemhAZ21haWwuY29tIiwiZXhwIjoxNDg0NTgyNDAwfQ.BAr84eeVU0Thq4Y5bAc4gNdJw8l8nwjN1Vvrvmf1M94
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJndW9mZW5nemhAZ21haWwuY29tIiwiZXhwIjoxNDg0NTgyNDAwfQ.BAr84eeVU0Thq4Y5bAc4gNdJw8l8nwjN1Vvrvmf1M94
 ```
