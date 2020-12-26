@@ -25,8 +25,8 @@ public class WebConfig extends WebMvcConfigurationSupport {
      */
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-        configurer.defaultContentType(MediaType.APPLICATION_JSON_UTF8).
-                mediaType("xml", MediaType.APPLICATION_JSON_UTF8).
+        configurer.defaultContentType(MediaType.APPLICATION_JSON).
+                mediaType("xml", MediaType.APPLICATION_XML).
                 mediaType("json", MediaType.APPLICATION_JSON);
     }
 
