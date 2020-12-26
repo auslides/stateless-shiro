@@ -2,7 +2,7 @@ package org.auslides.security.config;
 
 import org.auslides.security.rest.AppErrorController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -47,13 +47,4 @@ public class WebConfig extends WebMvcConfigurationSupport {
         b.indentOutput(true).dateFormat(new SimpleDateFormat("yyyy-MM-dd"));
         return b;
     }
-
-    @Autowired
-    private ErrorAttributes errorAttributes;
-
-    @Bean
-    public AppErrorController appErrorController() {
-        return new AppErrorController(errorAttributes) ;
-    }
-
 }

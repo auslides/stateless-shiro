@@ -4,7 +4,8 @@ import org.auslides.security.mapper.TokenMapper;
 import org.auslides.security.model.DBAuthenticationToken;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 public class TokenRepositoryImpl implements TokenRepository {
 
-    private static final Logger LOGGER = Logger.getLogger(TokenRepositoryImpl.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenRepositoryImpl.class.getName());
 
     @Autowired
     TokenMapper tokenMapper ;

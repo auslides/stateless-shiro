@@ -15,48 +15,54 @@ import java.util.Arrays;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.TestRestTemplate.HttpClientOption;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
-@SpringApplicationConfiguration(classes
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes
         = {Application.class, ShiroConfig.class, RepositoryConfig.class})
-@WebAppConfiguration
-@IntegrationTest
 @TestExecutionListeners(inheritListeners = false, listeners
         = {DependencyInjectionTestExecutionListener.class})
-public class UserControllerTest extends AbstractTestNGSpringContextTests {
+public class UserControllerTest {
 
-    private final String BASE_URL = "http://localhost:8080/users";
+    private final String BASE_URL_PATTERN = "http://localhost:%d/users";
     private final String USER_NAME = "Balalala";
     private final String USER_EMAIL = "balalala@gmail.com";
     private final String USER_PWD = "1111";
+
     @Autowired
     private DefaultPasswordService passwordService;
     @Autowired
     private UserRepository userRepo;
 
-    @BeforeClass
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Before
     public void setUp() {
         // clean-up users, roles and permissions
         userRepo.deleteAll();
@@ -94,9 +100,8 @@ public class UserControllerTest extends AbstractTestNGSpringContextTests {
         final String json = new ObjectMapper().writeValueAsString(
                 new UsernamePasswordToken(USER_EMAIL, USER_PWD));
         System.out.println(json);
-        final ResponseEntity<String> response = new TestRestTemplate(
-                HttpClientOption.ENABLE_COOKIES).exchange(BASE_URL.concat("/auth"),
-                HttpMethod.POST, new HttpEntity<>(json, headers), String.class);
+        final ResponseEntity<String> response = restTemplate.exchange(String.format(BASE_URL_PATTERN, port).concat("/auth"),
+                HttpMethod.POST, new HttpEntity<>(json, headers), String.class) ;
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
     }
 
@@ -110,9 +115,8 @@ public class UserControllerTest extends AbstractTestNGSpringContextTests {
                 new UsernamePasswordToken(USER_EMAIL, "wrong password"));
         System.out.println(json);
         final ResponseEntity<String> response = new TestRestTemplate(
-                HttpClientOption.ENABLE_COOKIES).exchange(BASE_URL.concat("/auth"),
+                TestRestTemplate.HttpClientOption.ENABLE_COOKIES).exchange(String.format(BASE_URL_PATTERN, port).concat("/auth"),
                 HttpMethod.POST, new HttpEntity<>(json, headers), String.class);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
     }
-
 }
