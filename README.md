@@ -40,7 +40,7 @@ Authentication failed：
 ```
 curl -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYWxhbGFAZ21haWwuY29tIiwiZXhwIjoxNjExNTkwNDAwfQ.hFy5UzQ9J3sUIt2PC79u4JtQM2q57z7PwhzV39loIBs" -X GET http://localhost:8080/users
 ```
-Returns:
+Response:
 ```json
 [{"id":null,"email":"dopper@gmail.com","name":"Dopper","active":true,"password":"$shiro1$SHA-256$500000$ZSH+0wy6o2657wepeJsCyg==$FjTsLhJl9M+z4qsAMxF5afSzpp1Vo5FmjiklO/dujnk=","roles":[{"id":null,"name":"DO_SOMETHING","description":null,"permissions":[{"id":null,"name":"DO_SOMETHING","description":null}]}]},{"id":null,"email":"balala@gmail.com","name":"Balala","active":true,"password":"$shiro1$SHA-256$500000$WtO6/UO62knKgYWkjDQeiA==$qimvEhdEXxmcI5CfPJ5vqIh4pGXoCPQSNgJ51Q8OLy0=","roles":[{"id":null,"name":"ADMIN","description":null,"permissions":[{"id":null,"name":"VIEW_ALL_USERS","description":null}]}]}]
 ```
@@ -48,3 +48,8 @@ Returns:
 ```
 curl -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiYWxhbGFAZ21haWwuY29tIiwiZXhwIjoxNjExNTkwNDAwfQ.hFy5UzQ9J3sUIt2PC79u4JtQM2q57z7PwhzV39loIBs" -X DELETE http://localhost:8080/users/logout
 ```
+Response:
+```
+{"message":"ok","status":200}
+```
+
