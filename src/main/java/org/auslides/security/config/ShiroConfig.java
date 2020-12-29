@@ -1,19 +1,19 @@
 package org.auslides.security.config;
 
+import org.apache.shiro.realm.Realm;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.auslides.security.shiro.filter.BearerTokenAuthenticatingFilter;
 import org.auslides.security.shiro.filter.BearerTokenRevokeFilter;
+import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.authc.credential.PasswordMatcher;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.auslides.security.shiro.realm.BearerTokenAuthenticatingRealm;
 import org.auslides.security.shiro.realm.DatabaseRealm;
 import org.auslides.security.shiro.stateless.StalessSecurityManager;
-import org.apache.shiro.authc.credential.DefaultPasswordService;
-import org.apache.shiro.authc.credential.PasswordMatcher;
-import org.apache.shiro.mgt.DefaultSecurityManager;
-import org.apache.shiro.realm.Realm;
-import org.apache.shiro.spring.LifecycleBeanPostProcessor;
-import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
-import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -43,9 +43,30 @@ public class ShiroConfig {
         return shiroFilter;
     }
 
+    /*
+       Bearer token support
+     */
     @Bean
-    public org.apache.shiro.mgt.SecurityManager securityManager() {
-        DefaultSecurityManager securityManager = new StalessSecurityManager() ;
+    BearerTokenAuthenticatingFilter bearerTokenAuthenticatingFilter() {
+        BearerTokenAuthenticatingFilter filter = new BearerTokenAuthenticatingFilter() ;
+        filter.setUsernameParam("username") ;
+        filter.setPasswordParam("password");
+        filter.setLoginUrl("/users/auth");
+        return filter ;
+    }
+
+    @Bean
+    BearerTokenRevokeFilter bearerTokenRevokeFilter() {
+        return new BearerTokenRevokeFilter() ;
+    }
+
+    /**
+     * Don't touch the session anymore
+     */
+    @Bean
+    public StalessSecurityManager securityManager()
+    {
+        StalessSecurityManager securityManager = new StalessSecurityManager() ;
         Collection<Realm> realms = Arrays.asList(bearerTokenAuthenticatingRealm(), databaseRealm()) ;
         securityManager.setRealms(realms);
         securityManager.setSessionManager(sessionManager());
@@ -61,6 +82,9 @@ public class ShiroConfig {
         return sessionManager;
     }
 
+    /*
+       Realm, for user profile access
+     */
     @Bean
     @DependsOn("lifecycleBeanPostProcessor")
     public BearerTokenAuthenticatingRealm bearerTokenAuthenticatingRealm() {
@@ -68,6 +92,7 @@ public class ShiroConfig {
         return realm;
     }
 
+    // utility
     @Bean
     @DependsOn("lifecycleBeanPostProcessor")
     public DatabaseRealm databaseRealm() {
@@ -93,33 +118,30 @@ public class ShiroConfig {
         return new LifecycleBeanPostProcessor();
     }
 
-    // token support
-    @Bean
-    BearerTokenAuthenticatingFilter bearerTokenAuthenticatingFilter() {
-        BearerTokenAuthenticatingFilter filter = new BearerTokenAuthenticatingFilter() ;
-        filter.setUsernameParam("username") ;
-        filter.setPasswordParam("password");
-        filter.setLoginUrl("/users/auth");
-        return filter ;
-    }
+    /*
+     *  https://shiro.apache.org/spring.html#enabling-shiro-annotations
+     *  use Shiro’s Annotations for security checks (for example, @RequiresRoles,
+     *  @RequiresPermissions, etc) in controllers. This requires Shiro’s Spring
+     *  AOP integration to scan for the appropriate annotated classes and perform
+     *  security logic as necessary.
+     *  The following two bean definitions are for this purpose.
+     */
+    @Configuration
+    public class ShiroConfigRequiresScan {
+        @Bean
+        @DependsOn("lifecycleBeanPostProcessor")
+        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+            DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+            defaultAdvisorAutoProxyCreator.setProxyTargetClass(true); // it's false by default
+            return defaultAdvisorAutoProxyCreator;
+        }
 
-    @Bean
-    BearerTokenRevokeFilter bearerTokenRevokeFilter() {
-        return new BearerTokenRevokeFilter() ;
-    }
-
-    // https://shiro.apache.org/spring.html#enabling-shiro-annotations
-    @Bean
-    @DependsOn("lifecycleBeanPostProcessor")
-    DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator() ;
-        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true); // it's false by default
-        return defaultAdvisorAutoProxyCreator ;
-    }
-    @Bean
-    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(){
-        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
-        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager());
-        return authorizationAttributeSourceAdvisor;
+        @Bean
+        public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(
+                org.apache.shiro.mgt.SecurityManager securityManager) {
+            AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+            authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+            return authorizationAttributeSourceAdvisor;
+        }
     }
 }
