@@ -8,7 +8,7 @@ mvn clean package spring-boot:run
 or run Application.main() in your IDE.
 
 ### Initialization
-Filled in users for test
+Fill in users for test
 ````
 curl -H "Content-Type: application/json" -X PUT http://localhost:8080/users/init
 ````
