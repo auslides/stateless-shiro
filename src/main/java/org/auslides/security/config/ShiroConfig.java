@@ -1,7 +1,10 @@
 package org.auslides.security.config;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
+import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
+import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.auslides.security.shiro.filter.BearerTokenAuthenticatingFilter;
 import org.auslides.security.shiro.filter.BearerTokenRevokeFilter;
@@ -13,7 +16,6 @@ import org.auslides.security.shiro.realm.BearerTokenAuthenticatingRealm;
 import org.auslides.security.shiro.realm.DatabaseRealm;
 import org.auslides.security.shiro.stateless.StalessSecurityManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -26,21 +28,23 @@ public class ShiroConfig {
 
     @Bean(name = "shiroFilter")
     public ShiroFilterFactoryBean shiroFilter() {
-        ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
-        shiroFilter.setSecurityManager(securityManager());
+        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+        shiroFilterFactoryBean.setSecurityManager(securityManager());
 
-        Map<String, String> filterChainDefinitionMapping = new HashMap<>();
-        filterChainDefinitionMapping.put("/users/auth", "tokenAuthc");
-        filterChainDefinitionMapping.put("/users", "tokenAuthc");
-        filterChainDefinitionMapping.put("/users/logout", "tokenAuthc,tokenLogout");
-        shiroFilter.setFilterChainDefinitionMap(filterChainDefinitionMapping);
-
+        // First define the alias in the ShiroFilterFactoryBean initialization
         Map<String, Filter> filters = new HashMap<>();
         filters.put("tokenAuthc", bearerTokenAuthenticatingFilter());
         filters.put("tokenLogout", bearerTokenRevokeFilter());
-        shiroFilter.setFilters(filters);
+        shiroFilterFactoryBean.setFilters(filters);
 
-        return shiroFilter;
+        // then do the mappings using the alias
+        Map<String, String> filterChainDefinitionMapping = new HashMap<>();
+        filterChainDefinitionMapping.put("/users/auth", "noSessionCreation,tokenAuthc");
+        filterChainDefinitionMapping.put("/users", "noSessionCreation,tokenAuthc");
+        filterChainDefinitionMapping.put("/users/logout", "noSessionCreation,tokenAuthc,tokenLogout");
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMapping);
+
+        return shiroFilterFactoryBean;
     }
 
     /*
@@ -70,7 +74,9 @@ public class ShiroConfig {
         Collection<Realm> realms = Arrays.asList(bearerTokenAuthenticatingRealm(), databaseRealm()) ;
         securityManager.setRealms(realms);
         securityManager.setSessionManager(sessionManager());
-        org.apache.shiro.SecurityUtils.setSecurityManager(securityManager) ;
+        // DO NOT do this in web applications
+        // https://shiro.apache.org/spring-boot.html#standalone-applications
+        // SecurityUtils.setSecurityManager(securityManager) ;
 
         return securityManager;
     }
@@ -124,24 +130,38 @@ public class ShiroConfig {
      *  @RequiresPermissions, etc) in controllers. This requires Shiro’s Spring
      *  AOP integration to scan for the appropriate annotated classes and perform
      *  security logic as necessary.
+     *
      *  The following two bean definitions are for this purpose.
-     */
-    @Configuration
-    public class ShiroConfigRequiresScan {
-        @Bean
-        @DependsOn("lifecycleBeanPostProcessor")
-        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-            DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
-            defaultAdvisorAutoProxyCreator.setProxyTargetClass(true); // it's false by default
-            return defaultAdvisorAutoProxyCreator;
-        }
+     *
+     * Deprecated
+     *
+    @Bean
+    @DependsOn("lifecycleBeanPostProcessor")
+    DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true); // it's false by default
+        return defaultAdvisorAutoProxyCreator;
+    }
 
-        @Bean
-        public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(
-                org.apache.shiro.mgt.SecurityManager securityManager) {
-            AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
-            authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
-            return authorizationAttributeSourceAdvisor;
-        }
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(
+            org.apache.shiro.mgt.SecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+        return authorizationAttributeSourceAdvisor;
+    }
+    */
+
+    /**
+     * https://shiro.apache.org/spring.html#enabling-shiro-annotations
+     */
+    @Bean
+    public ShiroFilterChainDefinition shiroFilterChainDefinition() {
+        DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
+        chainDefinition.addPathDefinition("/**", "anon"); // all paths are managed via annotations
+
+        // or allow basic authentication, but NOT require it.
+        // chainDefinition.addPathDefinition("/**", "authcBasic[permissive]");
+        return chainDefinition;
     }
 }
