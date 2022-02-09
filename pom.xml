@@ -18,7 +18,7 @@
 
         <!-- dependencies -->
         <spring-boot.version>2.4.1</spring-boot.version>
-        <shiro.version>1.7.0</shiro.version>
+        <shiro.version>1.7.1</shiro.version>
         <jjwt.version>0.9.1</jjwt.version>
         <json.version>20201115</json.version>
         <guava.version>30.1-jre</guava.version>
