@@ -21,7 +21,7 @@
         <shiro.version>1.7.0</shiro.version>
         <jjwt.version>0.9.1</jjwt.version>
         <json.version>20201115</json.version>
-        <guava.version>30.1-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
         <mybatis.version>3.5.6</mybatis.version>
         <mybatis-spring.version>2.0.6</mybatis-spring.version>
         <!-- Starting with version 10.15.x, Derby requires Java 9 or newer
